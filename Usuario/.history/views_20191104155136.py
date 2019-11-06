@@ -28,7 +28,7 @@ def api_detail_usuario_view(request, identificador):
 @api_view(['PUT',])
 def api_update_usuario_view(request, identificador):
 	try:
-		usuario = Account.objects.get(identificador = identificador)
+		usuario = Usuario.objects.get(identificador = identificador)
 	except usuario.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
 	if request.method == 'PUT':

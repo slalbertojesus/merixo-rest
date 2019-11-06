@@ -5,12 +5,12 @@ from .models import Account
 class AccountModelTest(TestCase):
     def setUp(self):
         Account.objects.create(
-            name='Paola Marai', email='maraibenitez@hotmail.com', password='Cesar6969', username='paola257')
+            name='Casper', email='', password='Bull Dog', username='Black')
         Account.objects.create(
-            name='Fernando Mikhail', email='fernix@gmail.com', password='coolguy827', username='fernix')
+            name='Casper', email='', password='Bull Dog', username='Black')
 
     def test_account_model(self):
-        puppy_casper = Account.objects.get(name='Casoer')
+        puppy_casper = Account.objects.get(name='Casper')
         puppy_muffin = Account.objects.get(name='Muffin')
         self.assertEqual(
             puppy_casper.get_breed(), "Casper belongs to Bull Dog breed.")

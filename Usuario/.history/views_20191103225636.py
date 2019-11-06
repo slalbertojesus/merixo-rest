@@ -28,9 +28,10 @@ def api_detail_usuario_view(request, identificador):
 @api_view(['PUT',])
 def api_update_usuario_view(request, identificador):
 	try:
-		usuario = Account.objects.get(identificador = identificador)
+		usuario = Usuario.objects.get(identificador = identificador)
 	except usuario.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
+
 	if request.method == 'PUT':
 		serializer = UsuarioSerializer(usuario, data=request.data)
 		data = {}
@@ -71,3 +72,26 @@ def api_create_usuario_view(request):
 			return Response(data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(["POST"])
+@permission_classes([AllowAny,])
+def api_login(request):
+    usuario = request.data.get("usuario")
+    password = request.data.get("password")
+    if usuario is None or password is None:
+        return Response({'error': 'No existe contraseña ni usuario'},
+                        status=HTTP_400_BAD_REQUEST)
+    usuario = authenticate(usuario=usuario, password=password)
+    get_tokens_for_user(usuario)
+    return {
+        'refresh': str(token),
+        'access': str(token.access_token),
+    }
+
+
+def authenticate(usuario, password):
+        usuario = Usuario.objects.get(usuario= usuario, password=password)
+        if not usuario:
+            raise serializers.ValidationError({'error': 'Usuario no existe'},
+                            status=HTTP_404_NOT_FOUND)
+        return usuario

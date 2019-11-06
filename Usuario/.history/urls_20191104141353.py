@@ -15,4 +15,5 @@ urlpatterns = [
 	path('<identificador>/update', api_update_usuario_view, name="update"),
 	path('<identificador>/delete', api_delete_usuario_view, name="delete"),
 	path('create', api_create_usuario_view, name="create"),
+	path('iniciarsesion', api_login, name="iniciar-sesion"),
 ]
