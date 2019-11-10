@@ -10,11 +10,8 @@ class AccountModelTest(TestCase):
             name='Fernando Mikhail', email='fernix@gmail.com', password='coolguy827', username='fernix')
 
     def test_account_model(self):
-        puppy_casper = Account.objects.get(name='Casoer')
-        puppy_muffin = Account.objects.get(name='Muffin')
-        self.assertEqual(
-            puppy_casper.get_breed(), "Casper belongs to Bull Dog breed.")
-        self.assertEqual(
-            puppy_muffin.get_breed(), "Muffin belongs to Gradane breed.")
-
-
+        accountOne = Account.objects.get(name='Paola Marai')
+        accountTwo = Account.objects.get(name='Fernando Mikhail')
+        self.assertEqual(accountOne.name, "Paola Marai")
+        self.assertEqual(accountTwo.name, "Fernando Mikhail")
+        

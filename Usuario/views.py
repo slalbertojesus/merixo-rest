@@ -1,59 +1,65 @@
 from django.shortcuts import render
 
 from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes 
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 
 from .models import Account
-from .serializers import RegistrationSerializer
+from .serializers import RegistrationSerializer, AccountSerializer, AccountUpdateSerializer
 
 SUCCESS = 'exito'
 ERROR = 'error'
-DELETE_SUCCESS = 'eliminado'
-UPDATE_SUCCESS = 'actualizado'
-CREATE_SUCCESS = 'creado'
+DELETE_SUCCESS = 'Eliminado'
+UPDATE_SUCCESS = 'Actualizado'
+CREATE_SUCCESS = 'Creado'
+
 
 @api_view(['GET', ])
-def api_detail_usuario_view(request, identificador):
+@permission_classes((IsAuthenticated, ))
+def api_detail_usuario_view(request, username):
 	try:
-		usuario = Usuario.objects.get(identificador = identificador)
+		usuario = Account.objects.get(username = username)
 	except usuario.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
+		
 	if request.method == 'GET':
-		serializer = UsuarioSerializer(usuario)
-		return Response(serializer.data)
+		serializer = AccountSerializer(usuario)
+		return Response(serializer.data)	
 
 @api_view(['PUT',])
-def api_update_usuario_view(request, identificador):
+@permission_classes((IsAuthenticated, ))
+def api_update_usuario_view(request, username):
 	try:
-		usuario = Account.objects.get(identificador = identificador)
-	except usuario.DoesNotExist:
+		account = Account.objects.get(username = username)
+	except account.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
+
 	if request.method == 'PUT':
-		serializer = UsuarioSerializer(usuario, data=request.data)
+		serializer = AccountUpdateSerializer(account, data=request.data)
 		data = {}
 		if serializer.is_valid():
-			serializer.save()
+			account = serializer.save()
+			data['response'] = "se actualizó información de forma exitosa"
 			data[SUCCESS] = UPDATE_SUCCESS
 			return Response(data=data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE',])
-def api_delete_usuario_view(request, identificador):
+@permission_classes((IsAuthenticated, ))
+def api_delete_usuario_view(request, username):
 	try:
-		usuario = Usuario.objects.get(identificador=identificador)
-	except usuario.DoesNotExist:
+		account = Account.objects.get(username = username)
+	except account.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
-
 	if request.method == 'DELETE':
-		operation = usuario.delete()
+		operation = account.delete()
 		data = {}
 		if operation:
 			data[SUCCESS] = DELETE_SUCCESS
 		return Response(data=data)
-
 
 @api_view(['POST',])
 @permission_classes([AllowAny,])
