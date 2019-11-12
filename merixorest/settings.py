@@ -26,7 +26,7 @@ SECRET_KEY = 'd1)8%muf&2_g$(^(j!m2-qz52=6o&*vkk8@lq(o*n(=s^r4)#4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['merixo.tk', '167.99.153.11']
 
 
 # Application definition
@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.auth.tokens',
     'rest_framework.authtoken',
+    'django.utils',
     'rest_framework',
+    'Historia',
     'Usuario',
 ]
 
@@ -56,6 +59,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'merixorest.urls'
 
 AUTH_USER_MODEL = 'Usuario.Account'
+#AUTHENTICATION_BACKENDS = ("Usuario.backend.Backend",)
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+
 
 TEMPLATES = [
     {
@@ -130,10 +136,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-ALLOWED_HOSTS = ['167.99.153.11','localhost']
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ( 'rest_framework.authentication.TokenAuthentication',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
 }
+
+EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+MAILGUN_ACCESS_KEY = '2f69494dafc5b138e7f4c14e24696783-1df6ec32-c55fc480'
+MAILGUN_SERVER_NAME = 'SERVER-NAME'
 

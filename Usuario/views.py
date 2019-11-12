@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate 
 
 from .models import Account
 from .serializers import RegistrationSerializer, AccountSerializer, AccountUpdateSerializer
@@ -18,22 +19,22 @@ CREATE_SUCCESS = 'Creado'
 
 
 @api_view(['GET', ])
-@permission_classes((IsAuthenticated, ))
-def api_detail_usuario_view(request, username):
+@permission_classes((IsAuthenticated,))
+def api_detail_usuario_view(request):
 	try:
-		usuario = Account.objects.get(username = username)
-	except usuario.DoesNotExist:
+		account = request.user
+	except account.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
 		
 	if request.method == 'GET':
-		serializer = AccountSerializer(usuario)
+		serializer = AccountSerializer(account)
 		return Response(serializer.data)	
 
 @api_view(['PUT',])
 @permission_classes((IsAuthenticated, ))
-def api_update_usuario_view(request, username):
+def api_update_usuario_view(request):
 	try:
-		account = Account.objects.get(username = username)
+		account = request.user
 	except account.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -47,19 +48,25 @@ def api_update_usuario_view(request, username):
 			return Response(data=data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['DELETE',])
+
+@api_view(['PUT',])
 @permission_classes((IsAuthenticated, ))
-def api_delete_usuario_view(request, username):
+def api_delete_usuario_view(request):
 	try:
-		account = Account.objects.get(username = username)
+		account = request.user
 	except account.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
-	if request.method == 'DELETE':
-		operation = account.delete()
+
+	if request.method == 'PUT':
+		serializer = AccountUpdateSerializer(account, data=request.data)
 		data = {}
-		if operation:
-			data[SUCCESS] = DELETE_SUCCESS
-		return Response(data=data)
+		if serializer.is_valid():
+			account = serializer.save()
+			data['response'] = "se actualizó estado de forma exitosa"
+			data[SUCCESS] = UPDATE_SUCCESS
+			return Response(data=data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST',])
 @permission_classes([AllowAny,])
@@ -76,4 +83,34 @@ def api_create_usuario_view(request):
 			data['token'] = token
 			return Response(data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST',])
+@permission_classes([AllowAny,])
+def api_sing_up_usuario_view(request):
+	if request.method == 'POST':
+		data = {}
+		account = Account
+		account = authenticate(
+		request, 
+		username=request.POST.get('email'), 
+		password=request.POST.get('password')
+		)
+
+	if account:
+		try:
+			token = Token.objects.get(user=account)
+			data['response'] = 'Ya entraste papu.'
+			data['username'] = account.username
+			data['email'] = account.email
+			data['name'] = account.name
+			data['estado'] = account.estado
+			data['token'] = token.key
+			return Response(data, status=status.HTTP_201_CREATED)
+		except Token.DoesNotExist:
+			token = Token.objects.create(user=account)
+	else:
+		data['response'] = 'Error' 
+		data['error_message'] = 'Invalid credentials'
+		return Response(data)
+	return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -6,13 +6,15 @@ from .views import (
 	api_update_usuario_view,
 	api_delete_usuario_view,
 	api_create_usuario_view,
+	api_sing_up_usuario_view,
 )
 
 app_name = 'merixo'
 
 urlpatterns = [
-	path('<username>/', api_detail_usuario_view, name="detail"),
-	path('<username>/update', api_update_usuario_view, name="update"),
+	path('properties', api_detail_usuario_view, name="properties"),
+	path('properties/update', api_update_usuario_view, name="update"),
 	path('<username>/delete', api_delete_usuario_view, name="delete"),
 	path('create', api_create_usuario_view, name="create"),
+	path('login',api_sing_up_usuario_view, name="login"),
 ]

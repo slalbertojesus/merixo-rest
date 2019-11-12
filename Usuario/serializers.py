@@ -4,6 +4,12 @@ from django.db import models
 
 from .models import Account
 
+class AccountLoginSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Account
+		fields = ['name', 'email', 'username', 'estado']
+
+
 class AccountSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Account
@@ -24,7 +30,10 @@ class AccountUpdateSerializer(serializers.ModelSerializer):
 		model = Account
 		fields = ['name','estado']
 
-
+class AccountActivateSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Account
+		fields = ['is_active']
 
 class RegistrationSerializer(serializers.ModelSerializer):
 
