@@ -7,6 +7,7 @@ from .views import (
 	api_delete_usuario_view,
 	api_create_usuario_view,
 	api_sing_up_usuario_view,
+	api_add_user_view,
 )
 
 app_name = 'merixo'
@@ -17,4 +18,5 @@ urlpatterns = [
 	path('<username>/delete', api_delete_usuario_view, name="delete"),
 	path('create', api_create_usuario_view, name="create"),
 	path('login',api_sing_up_usuario_view, name="login"),
+	path('adduser',api_add_user_view, name="adduser"),
 ]

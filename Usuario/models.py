@@ -4,7 +4,9 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 from django.db.models.signals import post_save 
 from django.dispatch import receiver  
-from rest_framework.authtoken.models import Token  
+from rest_framework.authtoken.models import Token
+from django.contrib.postgres.fields import ArrayField
+from PIL import Image
 
 
 class MyAccountManager(BaseUserManager):
@@ -35,6 +37,11 @@ class MyAccountManager(BaseUserManager):
 		user.save(using=self._db)
 		return user
 
+def upload_location(instance, filename, **kwargs):
+	file_path = 'perfil/{username}/{email}-{filename}'.format(
+	username=str(instance.username),  email=str(instance.email), filename=filename
+	)
+	return file_path
 
 class Account(AbstractBaseUser):
 	name                    = models.CharField(max_length=30)
@@ -43,9 +50,10 @@ class Account(AbstractBaseUser):
 	estado 					= models.CharField(max_length=30)
 	date_joined				= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
 	last_login				= models.DateTimeField(verbose_name='last login', auto_now=True)
-	listaUsuarios 			= models.ManyToManyField("self", blank=True) 
+	listaUsuarios 			= ArrayField(models.CharField(max_length=200), null=True,default=list) 
+	pic 					= models.ImageField(upload_to=upload_location, null=False, blank=False)
 	is_admin				= models.BooleanField(default=False)
-	is_active				= models.BooleanField(default=False)
+	is_active				= models.BooleanField(default=True)
 	is_staff				= models.BooleanField(default=False)
 	is_superuser			= models.BooleanField(default=False)
 
@@ -62,6 +70,7 @@ class Account(AbstractBaseUser):
 
 	def has_module_perms(self, app_label):
 		return True
+
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

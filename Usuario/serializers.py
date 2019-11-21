@@ -1,8 +1,26 @@
+import os
 from rest_framework import serializers
-
+from .utils import StringArrayField
 from django.db import models
-
 from .models import Account
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.storage import FileSystemStorage
+from rest_framework.fields import ListField
+
+from Usuario.utils import is_image_aspect_ratio_valid, is_image_size_valid
+IMAGE_SIZE_MAX_BYTES = 1024 * 1024 * 2 # 2MB
+MIN_TITLE_LENGTH = 5
+MIN_BODY_LENGTH = 50
+
+
+class AccountAddUserSerializer(serializers.ModelSerializer):
+	#listaUsuarios = StringArrayField()
+
+	class Meta:
+		model = Account
+		fields = ['username']
+
 
 class AccountLoginSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -13,7 +31,7 @@ class AccountLoginSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Account
-		fields = ['name', 'email', 'username', 'estado']
+		fields = ['name', 'email', 'username', 'estado', 'pic']
 
 	def	save(self):
 		account = Account(
@@ -26,9 +44,35 @@ class AccountSerializer(serializers.ModelSerializer):
 		return account
 
 class AccountUpdateSerializer(serializers.ModelSerializer):
+
 	class Meta:
 		model = Account
-		fields = ['name','estado']
+		fields = ['name','estado','pic']
+
+	def validate(self, account):
+		try:
+			pic = account['pic']
+			url = os.path.join(settings.TEMP , str(pic))
+			storage = FileSystemStorage(location=url)
+
+			with storage.open('', 'wb+') as destination:
+				for chunk in pic.chunks():
+					destination.write(chunk)
+				destination.close()
+			
+			if not is_image_size_valid(url, IMAGE_SIZE_MAX_BYTES):
+					os.remove(url)
+					raise serializers.ValidationError({"response": 
+				"Imagen es muy grande"})
+			
+			if not is_image_aspect_ratio_valid(url):
+					os.remove(url)
+					raise serializers.ValidationError({"response": 
+				"Altura de la imagen es inválida"})
+			os.remove(url)
+		except KeyError:
+				pass
+		return account
 
 class AccountActivateSerializer(serializers.ModelSerializer):
 	class Meta:
