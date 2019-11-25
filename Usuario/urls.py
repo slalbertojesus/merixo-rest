@@ -9,6 +9,7 @@ from .views import (
 	api_sing_up_usuario_view,
 	api_add_user_view,
 	api_delete_user_view,
+	api_get_all_contacts_user_view,
 )
 
 app_name = 'merixo'
@@ -21,4 +22,5 @@ urlpatterns = [
 	path('login',api_sing_up_usuario_view, name="login"),
 	path('addcontact',api_add_user_view, name="addcontact"),
 	path('deletecontact',api_delete_user_view, name="deletecontact"),
+	path('getallcontacts',api_get_all_contacts_user_view, name="getallcontacts"),
 ]

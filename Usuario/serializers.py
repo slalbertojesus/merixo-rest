@@ -13,7 +13,7 @@ MIN_TITLE_LENGTH = 5
 MIN_BODY_LENGTH = 50
 
 
-class AccountAddUserSerializer(serializers.ModelSerializer):
+class AccountContactsSerializers(serializers.ModelSerializer):
 	class Meta:
 		model = Account
 		fields = ['listaUsuarios']

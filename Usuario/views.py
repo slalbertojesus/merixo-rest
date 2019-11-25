@@ -8,9 +8,10 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate 
 from django_postgres_extensions.models.functions import ArrayAppend
+import json
 
 from .models import Account
-from .serializers import RegistrationSerializer, AccountSerializer, AccountUpdateSerializer, AccountAddUserSerializer
+from .serializers import RegistrationSerializer, AccountSerializer, AccountUpdateSerializer, AccountContactsSerializers
 
 SUCCESS = 'exito'
 ERROR = 'error'
@@ -100,6 +101,23 @@ def api_delete_user_view(request):
 			data[SUCCESS] = UPDATE_SUCCESS
 			return Response(data=data)
 		return Response(status=status.HTTP_400_BAD_REQUEST)
+
+# Obtiene contactos
+# Permite obtener todos los contactos de la cuenta del usuario.
+# Url: http://merixo.tk/getallcontacts
+# Headers: Authorization: Token <token>
+@api_view(['GET',])
+@permission_classes((IsAuthenticated,))
+def api_get_all_contacts_user_view(request):
+	try:
+		account = request.user
+	except account.DoesNotExist:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'GET':
+		usuario = Account.objects.get(username = account.username)
+		serializer = AccountContactsSerializers(usuario)
+		return Response(serializer.data)
+	return Response(status=status.HTTP_400_BAD_REQUEST)
 
 # Desactiva usuario
 # Desactiva una cuenta de usuario
