@@ -38,9 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.auth.tokens',
     'rest_framework.authtoken',
-    'django.utils',
     'rest_framework',
     'Historia',
     'Usuario',
@@ -59,8 +57,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'merixorest.urls'
 
 AUTH_USER_MODEL = 'Usuario.Account'
-#AUTHENTICATION_BACKENDS = ("Usuario.backend.Backend",)
-AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+AUTHENTICATION_BACKENDS = ( 
+    'django.contrib.auth.backends.AllowAllUsersModelBackend', 
+    )
 
 
 TEMPLATES = [
@@ -133,15 +132,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ( 'rest_framework.authentication.TokenAuthentication',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
 }
 
-EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
-MAILGUN_ACCESS_KEY = '2f69494dafc5b138e7f4c14e24696783-1df6ec32-c55fc480'
-MAILGUN_SERVER_NAME = 'SERVER-NAME'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'media'),
+]
 
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
+TEMP = os.path.join(BASE_DIR, 'temp')

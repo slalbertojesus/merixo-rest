@@ -1,6 +1,5 @@
 import os
 from rest_framework import serializers
-from .utils import StringArrayField
 from django.db import models
 from .models import Account
 from django.conf import settings
@@ -15,11 +14,9 @@ MIN_BODY_LENGTH = 50
 
 
 class AccountAddUserSerializer(serializers.ModelSerializer):
-	#listaUsuarios = StringArrayField()
-
 	class Meta:
 		model = Account
-		fields = ['username']
+		fields = ['listaUsuarios']
 
 
 class AccountLoginSerializer(serializers.ModelSerializer):

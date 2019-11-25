@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
-from registration.backends.hmac.views import RegistrationView as coso
 from django.contrib.auth import authenticate 
 from django_postgres_extensions.models.functions import ArrayAppend
 
@@ -19,7 +18,10 @@ DELETE_SUCCESS = 'Eliminado'
 UPDATE_SUCCESS = 'Actualizado'
 CREATE_SUCCESS = 'Creado'
 
-
+# Obtiene propiedades de cuenta
+# Obtiene las propiedades: name, email, username , estado, pic del objeto Account
+# Url: https://merixo.tk/peroperties
+# Headers: Authorization: Token <token>
 @api_view(['GET', ])
 @permission_classes((IsAuthenticated,))
 def api_detail_usuario_view(request):
@@ -32,6 +34,10 @@ def api_detail_usuario_view(request):
 		serializer = AccountSerializer(account)
 		return Response(serializer.data)	
 
+# Actualiza cuenta
+# Permite actualizar las propiedades de la cuenta
+# Url: https://merixo.tk/peroperties/update
+# Headers: Authorization: Token <token>
 @api_view(['PUT',])
 @permission_classes((IsAuthenticated,))
 def api_update_usuario_view(request):
@@ -49,28 +55,56 @@ def api_update_usuario_view(request):
 			return Response(data=data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# Añade contacto
+# Permite añadir un contacto a la cuenta del usuario
+# Url: http://merixo.tk/addcontact
+# Headers: Authorization: Token <token>
 @api_view(['PUT',])
 @permission_classes((IsAuthenticated,))
 def api_add_user_view(request):
 	try:
 		account = request.user
 		usertoadd=request.POST.get('usertoadd')
-		username=request.POST.get('username')
 	except account.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
 	if request.method == 'PUT':
-		usuario = Account.objects.get(username = username)
+		usuario = Account.objects.get(username = account.username)
 		usuario.listaUsuarios.append(usertoadd)
-		serializer = AccountAddUserSerializer(usuario, data=request.data)
+		usuario.save()
 		data = {}
-		if serializer.is_valid():
-			serializer.save()
-			data['response'] = "se agregó usuario de forma exitosa"
+		if usuario.exists():
+			data['response'] = "se agregó contacto de forma exitosa"
+			data	[SUCCESS] = UPDATE_SUCCESS
+			return Response(data=data)
+	return Response(status=status.HTTP_400_BAD_REQUEST)
+
+# Eliminar contacto
+# Permite eliminar un contacto de la cuenta del usuario
+# Url: http://merixo.tk/deletecontact
+# Headers: Authorization: Token <token>
+@api_view(['PUT',])
+@permission_classes((IsAuthenticated,))
+def api_delete_user_view(request):
+	try:
+		account = request.user
+		usertodelete=request.POST.get('usertodelete')
+	except account.DoesNotExist:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'PUT':
+		usuario = Account.objects.get(username = account.username)
+		usuario.listaUsuarios.remove(usertodelete)
+		usuario.save()
+		data = {}
+		if usuario.exists():
+			data['response'] = "se eliminó contacto de forma exitosa"
 			data[SUCCESS] = UPDATE_SUCCESS
 			return Response(data=data)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+		return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
+# Desactiva usuario
+# Desactiva una cuenta de usuario
+# Url: http://merixo.tk/properties/delete
+# Headers: Authorization: Token <token>
 @api_view(['PUT',])
 @permission_classes((IsAuthenticated, ))
 def api_delete_usuario_view(request):
@@ -88,7 +122,9 @@ def api_delete_usuario_view(request):
 			return Response(data=data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# Crea una cuenta
+# Permite añadir una cuenta 
+# Url: http://merixo.tk/create
 @api_view(['POST',])
 @permission_classes([AllowAny,])
 def api_create_usuario_view(request):
@@ -105,7 +141,9 @@ def api_create_usuario_view(request):
 			return Response(data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# Iniciar sesión
+# Permite iniciar sesión en el sistema
+# Url: http://merixo.tk/login
 @api_view(['POST',])
 @permission_classes([AllowAny,])
 def api_sing_up_usuario_view(request):
@@ -114,9 +152,7 @@ def api_sing_up_usuario_view(request):
 		account = authenticate(
 		request, 
 		username=request.POST.get('email'), 
-		password=request.POST.get('password')
-		)
-
+		password=request.POST.get('password'))
 	if account:
 		try:
 			token = Token.objects.get(user=account)
@@ -133,5 +169,4 @@ def api_sing_up_usuario_view(request):
 		data['response'] = 'Error' 
 		data['error_message'] = 'Datos inválidos'
 		return Response(data)
-	return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+	return Response(status=status.HTTP_400_BAD_REQUEST)
