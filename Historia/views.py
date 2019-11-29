@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate 
+from django.utils.text import slugify
 
 from Usuario.models import Account
 from .models import Story
@@ -24,7 +25,7 @@ CREATE_SUCCESS = 'Creado'
 # Url: http://merixo.tk/createstory
 # Headers: Authorization: Token <token>
 @api_view(['POST',])
-@permission_classes([AllowAny,])
+@permission_classes((IsAuthenticated,))
 def api_create_story_view(request):
 	if request.method == 'POST':
 		data = request.data
@@ -37,3 +38,24 @@ def api_create_story_view(request):
 			data['response'] = "se registró de forma exitosa"
 			return Response(data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Elimina una historia
+# Permite eliminar una cuenta ligada a una historia
+# Url: http://merixo.tk/<slug>/delete
+# Headers: Authorization: Token <token>
+@api_view(['DELETE',])
+@permission_classes((IsAuthenticated,))
+def api_delete_story_view(request, slug):
+	try:
+		story = Story.objects.get(slug=slug)
+	except story.DoesNotExist:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	user = request.user
+	if story.author != user:
+		return Response({'response':"No tienes permiso para eliminar esta historia."}) 
+	if request.method == 'DELETE':
+		operation = story.delete()
+		data = {}
+		if operation:
+			data['response'] = DELETE_SUCCESS
+		return Response(data=data)
