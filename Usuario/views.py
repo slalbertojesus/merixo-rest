@@ -8,7 +8,6 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate 
 from django_postgres_extensions.models.functions import ArrayAppend
-import json
 
 from .models import Account
 from .serializers import RegistrationSerializer, AccountSerializer, AccountUpdateSerializer, AccountContactsSerializers

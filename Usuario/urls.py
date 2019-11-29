@@ -12,7 +12,7 @@ from .views import (
 	api_get_all_contacts_user_view,
 )
 
-app_name = 'merixo'
+app_name = 'Usuario'
 
 urlpatterns = [
 	path('properties', api_detail_usuario_view, name="properties"),
