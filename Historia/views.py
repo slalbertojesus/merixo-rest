@@ -8,11 +8,16 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate 
 from django.utils.text import slugify
+from django.core import serializers
+from django.http import HttpResponse
+
+import json
+import requests
 
 from Usuario.models import Account
 from .models import Story
 
-from .serializers import StoryCreateSerializer
+from .serializers import StoryCreateSerializer, StoriesSerializer
 
 SUCCESS = 'exito'
 ERROR = 'error'
@@ -59,3 +64,20 @@ def api_delete_story_view(request, slug):
 		if operation:
 			data['response'] = DELETE_SUCCESS
 		return Response(data=data)
+
+# Obtiene lista de historias de usuario
+# Permite obtener lista de historiaas de usuario
+# Url: http://merixo.tk/getallstories
+# Headers: Authorization: Token <token>
+@api_view(['GET',])
+@permission_classes((IsAuthenticated,))
+def api_get_all_stories_view(request):
+	try:
+		account = request.user.pk
+	except account.DoesNotExist:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'GET':
+		account_storys = Story.objects.filter(author = account)
+		serializer = StoriesSerializer(account_storys, many=True)
+		return Response(serializer.data)
+	return Response(status=status.HTTP_400_BAD_REQUEST)

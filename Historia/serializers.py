@@ -12,6 +12,11 @@ IMAGE_SIZE_MAX_BYTES = 1024 * 1024 * 2
 MIN_TITLE_LENGTH = 5
 MIN_BODY_LENGTH = 50
 
+class StoriesSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Story
+		fields = ['title', 'pic', 'date_created']
+
 class StoryCreateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Story
