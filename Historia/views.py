@@ -81,3 +81,25 @@ def api_get_all_stories_view(request):
 		serializer = StoriesSerializer(account_storys, many=True)
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
+
+# Agrega historia a favoritos
+# Permite agregar una historia a favoritos
+# Url: http://merixo.tk/addtofavorites
+# Headers: Authorization: Token <token>
+@api_view(['PUT',])
+@permission_classes((IsAuthenticated,))
+def api_add_story_favorites_view(request):
+	try:
+		account = request.user
+		storytoadd=request.POST.get('id')
+	except account.DoesNotExist:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'PUT':
+		usuario = Account.objects.get(username = account.username)
+		usuario.lista_historias.append(storytoadd)
+		usuario.save()
+		data = {}
+		data['response'] = "se agregó historia a lista de favoritos de forma exitosa"
+		data[SUCCESS] = UPDATE_SUCCESS
+		return Response(data=data)
+	return Response(status=status.HTTP_400_BAD_REQUEST)

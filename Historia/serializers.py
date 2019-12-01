@@ -15,7 +15,7 @@ MIN_BODY_LENGTH = 50
 class StoriesSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Story
-		fields = ['title', 'pic', 'date_created']
+		fields = ['title', 'pic', 'date_created','id']
 
 class StoryCreateSerializer(serializers.ModelSerializer):
 	class Meta:
