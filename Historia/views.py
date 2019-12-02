@@ -18,7 +18,7 @@ from Usuario.models import Account
 from .models import Story
 
 from Usuario.serializers import AccountFavoritesSerializers
-from .serializers import StoryCreateSerializer, StoriesSerializer
+from .serializers import StoryCreateSerializer, StoriesSerializer, StoryCommentsSerializer
 
 SUCCESS = 'exito'
 ERROR = 'error'
@@ -114,7 +114,7 @@ def api_add_story_favorites_view(request):
 def api_delete_from_favorites_view(request):
 	try:
 		account = request.user
-		storytodelete_req =request.POST.get('id')
+		storytodelete_req = request.POST.get('id')
 		storytodelete = int(storytodelete_req)
 	except account.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
@@ -178,5 +178,23 @@ def api_get_feed_view(request):
 				result.append(story)
 			username +=1
 		serializer = StoriesSerializer(result, many=True)
+		return Response(serializer.data)
+	return Response(status=status.HTTP_400_BAD_REQUEST)
+
+# Obtiene lista de comentarios de historia
+# Permite obtener lista de comentarios agregados a una historia
+# Url: http://merixo.tk/getcomments
+# Headers: Authorization: Token <token>
+@api_view(['GET',])
+@permission_classes((IsAuthenticated,))
+def api_get_story_comments_view(request):
+	try:
+		account = request.user
+		story_id = request.POST.get('id')
+	except account.DoesNotExist:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'GET':
+		story = Story.objects.get(id = story_id)
+		serializer = StoryCommentsSerializer(story)
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)

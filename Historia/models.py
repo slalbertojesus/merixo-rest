@@ -3,6 +3,8 @@ from django.conf import settings
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
+from django.contrib.postgres.fields import ArrayField
+
 
 def upload_location(instance, filename, **kwargs):
 	file_path = 'stories/{author_id}/{title}-{filename}'.format(
@@ -19,6 +21,7 @@ class Story(models.Model):
     title       		= models.CharField(max_length=30)
     author 				= models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     slug 				= models.SlugField(blank=True, unique=True)
+    comments            = ArrayField(models.CharField(max_length=200), null=True,default=list)
 
 def __str__(self):
 		return self.title

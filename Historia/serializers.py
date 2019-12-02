@@ -12,6 +12,10 @@ IMAGE_SIZE_MAX_BYTES = 1024 * 1024 * 2
 MIN_TITLE_LENGTH = 5
 MIN_BODY_LENGTH = 50
 
+class StoryCommentsSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Story
+		fields = ['comments']
 
 class StoriesSerializer(serializers.ModelSerializer):
 	class Meta:
