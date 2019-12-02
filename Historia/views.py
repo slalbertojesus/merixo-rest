@@ -144,10 +144,11 @@ def api_get_fav_stories_view(request):
 		favorites = usuario.historias_favoritos
 		result = []
 		item = 0
-		aid=0
+		identity = 0
 		for item in favorites:
-			story = Story.objects.get(id = favorites[item])
+			story = Story.objects.get(id = favorites[identity])
 			result.append(story)
+			identity +=1
 		serializer = StoriesSerializer(result, many=True)
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
