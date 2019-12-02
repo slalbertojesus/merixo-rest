@@ -152,3 +152,31 @@ def api_get_fav_stories_view(request):
 		serializer = StoriesSerializer(result, many=True)
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
+
+# Obtiene lista de historias de contactos
+# Permite obtener lista de historias de contactos agregados
+# Url: http://merixo.tk/getfeed
+# Headers: Authorization: Token <token>
+@api_view(['GET',])
+@permission_classes((IsAuthenticated,))
+def api_get_feed_view(request):
+	try:
+		account = request.user
+	except account.DoesNotExist:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'GET':
+		usuario = Account.objects.get(username = account.username)
+		contacts = usuario.listaUsuarios
+		result = []
+		user = 0
+		username = 0
+		story = 0
+		for user in contacts:
+			author_object = Account.objects.get(username = contacts[username])
+			user_storys = Story.objects.filter(author = author_object)
+			for story in user_storys:
+				result.append(story)
+			username +=1
+		serializer = StoriesSerializer(result, many=True)
+		return Response(serializer.data)
+	return Response(status=status.HTTP_400_BAD_REQUEST)
