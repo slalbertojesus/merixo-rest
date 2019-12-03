@@ -182,6 +182,34 @@ def api_get_feed_view(request):
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
 
+# Añade comentario a historia
+# Permite añadir un comentario a historia
+# Url: http://merixo.tk/addcomment
+# Headers: Authorization: Token <token>
+@api_view(['PUT',])
+@permission_classes((IsAuthenticated,))
+def api_add_comment_view(request):
+	try:
+		account = request.user
+		story_id = request.POST.get('id')
+		comment = request.POST.get('comment')
+		if not comment:
+			return Response(status=status.HTTP_404_NOT_FOUND)
+	except account.DoesNotExist:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'PUT':
+		data = {}
+		try:
+			story = Story.objects.get(id = story_id)
+			story.comments.append(comment)
+		except ValueError:
+			return Response(status=status.HTTP_404_NOT_FOUND)
+		story.save()
+		data['response'] = "se agregó comentario de forma exitosa"
+		data	[SUCCESS] = UPDATE_SUCCESS
+		return Response(data=data)
+	return Response(status=status.HTTP_400_BAD_REQUEST)
+
 # Obtiene lista de comentarios de historia
 # Permite obtener lista de comentarios agregados a una historia
 # Url: http://merixo.tk/getcomments
