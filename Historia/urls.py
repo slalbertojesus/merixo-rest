@@ -10,6 +10,7 @@ from .views import (
 	api_delete_from_favorites_view,
 	api_get_feed_view,
 	api_get_story_comments_view,
+	api_add_like_view,
 )
 
 app_name = 'Historia'
@@ -22,5 +23,6 @@ urlpatterns = [
 	path('getfavstories', api_get_fav_stories_view, name="getfavstories"),
 	path('deletefromfavorites', api_delete_from_favorites_view, name="deletefromfavorites"),
 	path('getfeed', api_get_feed_view, name="getfeed"),
-	path('getcomments',api_get_story_comments_view, name="getcomments"),
+	path('getcomments', api_get_story_comments_view, name="getcomments"),
+	path('addlike', api_add_like_view, name="addlike"),
 ]

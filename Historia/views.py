@@ -16,6 +16,7 @@ import requests
 
 from Usuario.models import Account
 from .models import Story
+from .models import Like
 
 from Usuario.serializers import AccountFavoritesSerializers
 from .serializers import StoryCreateSerializer, StoriesSerializer, StoryCommentsSerializer
@@ -197,4 +198,31 @@ def api_get_story_comments_view(request):
 		story = Story.objects.get(id = story_id)
 		serializer = StoryCommentsSerializer(story)
 		return Response(serializer.data)
+	return Response(status=status.HTTP_400_BAD_REQUEST)
+
+# Dar like a historia
+# Permite agregar un like a historia
+# Url: http://merixo.tk/addlike
+# Headers: Authorization: Token <token>
+@api_view(['PUT',]) 
+@permission_classes((IsAuthenticated,))
+def api_add_like_view(request):
+	try:
+		account = request.user
+		story_id=request.POST.get('id')
+	except account.DoesNotExist:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'PUT':
+		account = Account.objects.get(username = account.username)
+		story = Story.objects.get(id = story_id)
+		try:
+			like = Like.objects.get(from_account = account, story = story).first()
+		except Like.DoesNotExist:
+			like = Like.objects.create(from_account = account, story = story)
+			data = {}
+			data['response'] = "se agregó like a historia de forma exitosa"
+			data[SUCCESS] = UPDATE_SUCCESS
+			return Response(data=data)
+		except Like.MultipleObjectsReturned:
+				return Response(status=status.HTTP_409_CONFLICT)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
