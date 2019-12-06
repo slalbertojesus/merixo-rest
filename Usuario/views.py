@@ -72,10 +72,9 @@ def api_add_user_view(request):
 		usuario.listaUsuarios.append(usertoadd)
 		usuario.save()
 		data = {}
-		if usuario.exists():
-			data['response'] = "se agregó contacto de forma exitosa"
-			data	[SUCCESS] = UPDATE_SUCCESS
-			return Response(data=data)
+		data['response'] = "se agregó contacto de forma exitosa"
+		data	[SUCCESS] = UPDATE_SUCCESS
+		return Response(data=data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
 
 # Eliminar contacto
@@ -95,11 +94,10 @@ def api_delete_user_view(request):
 		usuario.listaUsuarios.remove(usertodelete)
 		usuario.save()
 		data = {}
-		if usuario.exists():
-			data['response'] = "se eliminó contacto de forma exitosa"
-			data[SUCCESS] = UPDATE_SUCCESS
-			return Response(data=data)
-		return Response(status=status.HTTP_400_BAD_REQUEST)
+		data['response'] = "se eliminó contacto de forma exitosa"
+		data[SUCCESS] = UPDATE_SUCCESS
+		return Response(data=data)
+	return Response(status=status.HTTP_400_BAD_REQUEST)
 
 # Obtiene contactos
 # Permite obtener todos los contactos de la cuenta del usuario.
@@ -114,7 +112,15 @@ def api_get_all_contacts_user_view(request):
 		return Response(status=status.HTTP_404_NOT_FOUND)
 	if request.method == 'GET':
 		usuario = Account.objects.get(username = account.username)
-		serializer = AccountContactsSerializers(usuario)
+		contacts = usuario.listaUsuarios
+		result = []
+		contact = 0
+		username = 0
+		for contact in contacts:
+			author_object = Account.objects.get(username = contacts[username])
+			result.append(author_object)
+			username +=1
+		serializer = AccountSerializer(result, many=True)
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
 

@@ -6,8 +6,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver  
 from rest_framework.authtoken.models import Token
 from django.contrib.postgres.fields import ArrayField
-from PIL import Image
-
 
 class MyAccountManager(BaseUserManager):
 	def create_user(self, email, username, password=None):
@@ -51,7 +49,9 @@ class Account(AbstractBaseUser):
 	date_joined				= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
 	last_login				= models.DateTimeField(verbose_name='last login', auto_now=True)
 	listaUsuarios 			= ArrayField(models.CharField(max_length=200), null=True,default=list) 
-	pic 					= models.ImageField(upload_to=upload_location, null=False, blank=False)
+	pic 					= models.ImageField(upload_to=upload_location, null=False, blank=False, 
+	default='/user.png')
+	historias_favoritos     = ArrayField(models.IntegerField(), null=True,default=list)
 	is_admin				= models.BooleanField(default=False)
 	is_active				= models.BooleanField(default=True)
 	is_staff				= models.BooleanField(default=False)

@@ -12,6 +12,10 @@ IMAGE_SIZE_MAX_BYTES = 1024 * 1024 * 2 # 2MB
 MIN_TITLE_LENGTH = 5
 MIN_BODY_LENGTH = 50
 
+class AccountFavoritesSerializers(serializers.ModelSerializer):
+	class Meta:
+		model = Account
+		fields = ['historias_favoritos']
 
 class AccountContactsSerializers(serializers.ModelSerializer):
 	class Meta:
