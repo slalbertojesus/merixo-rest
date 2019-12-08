@@ -46,7 +46,7 @@ def api_update_usuario_view(request):
 	except account.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
 	if request.method == 'PUT':
-		serializer = AccountUpdateSerializer(account, data=request.data)
+		serializer = AccountUpdateSerializer(account, data=request.data, partial=True)
 		data = {}
 		if serializer.is_valid():
 			serializer.save()

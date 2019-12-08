@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate
 from django.utils.text import slugify
 from django.core import serializers
 from django.http import HttpResponse
+from django.db import IntegrityError
 
 import json
 import requests
@@ -41,9 +42,13 @@ def api_create_story_view(request):
 		serializer = StoryCreateSerializer(data=data)
 		data = {}
 		if serializer.is_valid():
-			account = serializer.save() 
-			data['response'] = "se registró de forma exitosa"
-			return Response(data, status=status.HTTP_201_CREATED)
+				try:
+					account = serializer.save() 
+					data['response'] = "se registró de forma exitosa"
+					return Response(data, status=status.HTTP_201_CREATED)
+				except IntegrityError:
+					data['response'] = "Intente otro nombre"
+					return Response(data, status=status.HTTP_409_CONFLICT)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Elimina una historia
