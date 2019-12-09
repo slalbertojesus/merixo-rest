@@ -188,9 +188,9 @@ def api_get_feed_view(request):
 				except user_storys.DoesNotExist:
 					username +=1
 				else:
-						for story in user_storys:
-							result.append(story)
-						username +=1
+					for story in user_storys:
+						result.append(story)
+					username +=1
 		serializer = StoriesSerializer(result, many=True)
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
