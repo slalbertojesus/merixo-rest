@@ -117,9 +117,13 @@ def api_get_all_contacts_user_view(request):
 		contact = 0
 		username = 0
 		for contact in contacts:
-			author_object = Account.objects.get(username = contacts[username])
-			result.append(author_object)
-			username +=1
+			try:
+				author_object = Account.objects.get(username = contacts[username])
+			except author_object.DoesNotExist:
+				username +=1
+			else:
+				result.append(author_object)
+				username +=1
 		serializer = AccountSerializer(result, many=True)
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)

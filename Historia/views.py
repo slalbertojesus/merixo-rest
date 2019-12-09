@@ -53,13 +53,13 @@ def api_create_story_view(request):
 
 # Elimina una historia
 # Permite eliminar una cuenta ligada a una historia
-# Url: http://merixo.tk/<slug>/delete
+# Url: http://merixo.tk/<id>/delete
 # Headers: Authorization: Token <token>
 @api_view(['DELETE',])
 @permission_classes((IsAuthenticated,))
-def api_delete_story_view(request, slug):
+def api_delete_story_view(request, id):
 	try:
-		story = Story.objects.get(slug=slug)
+		story = Story.objects.get(id=id)
 	except story.DoesNotExist:
 		return Response(status=status.HTTP_404_NOT_FOUND)
 	user = request.user
@@ -180,9 +180,10 @@ def api_get_feed_view(request):
 		for user in contacts:
 			author_object = Account.objects.get(username = contacts[username])
 			user_storys = Story.objects.filter(author = author_object)
-			for story in user_storys:
-				result.append(story)
-			username +=1
+			if Story.objects.filter(author = author_object).exists():
+				for story in user_storys:
+					result.append(story)
+				username +=1
 		serializer = StoriesSerializer(result, many=True)
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
