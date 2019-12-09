@@ -178,15 +178,31 @@ def api_get_feed_view(request):
 		username = 0
 		story = 0
 		for user in contacts:
-			author_object = Account.objects.get(username = contacts[username])
-			user_storys = Story.objects.filter(author = author_object)
-			if Story.objects.filter(author = author_object).exists():
-				for story in user_storys:
-					result.append(story)
-				username +=1
+			try:
+				author_object = Account.objects.get(username = contacts[username])
+			except author_object.DoesNotExist:
+				pass
+			else:
+				try:
+					user_storys = Story.objects.filter(author = author_object)
+				except user_storys.DoesNotExist:
+					username +=1
+				else:
+						for story in user_storys:
+							result.append(story)
+						username +=1
 		serializer = StoriesSerializer(result, many=True)
 		return Response(serializer.data)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
+
+	for contact in contacts:
+			try:
+				author_object = Account.objects.get(username = contacts[username])
+			except author_object.DoesNotExist:
+				username +=1
+			else:
+				result.append(author_object)
+				username +=1
 
 # Añade comentario a historia
 # Permite añadir un comentario a historia
