@@ -5,7 +5,7 @@ Django==2.2.10
 django-mailgun==0.9.1
 django-postgres-extensions==0.9.3
 django-registration==2.4.1
-djangorestframework==3.10.3
+djangorestframework==3.11.2
 djangorestframework-simplejwt==4.3.0
 gunicorn==19.9.0
 idna==2.8
