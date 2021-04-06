@@ -4,7 +4,7 @@ confusable-homoglyphs==3.2.0
 Django==2.2.10
 django-mailgun==0.9.1
 django-postgres-extensions==0.9.3
-django-registration==2.4.1
+django-registration==3.1.2
 djangorestframework==3.10.3
 djangorestframework-simplejwt==4.3.0
 gunicorn==19.9.0
