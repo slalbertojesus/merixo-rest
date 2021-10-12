@@ -11,7 +11,7 @@ gunicorn==19.9.0
 idna==2.8
 jenkins==1.0.2
 numpy==1.17.4
-opencv-python==4.1.1.26
+opencv-python==4.2.0.32
 Pillow==6.2.1
 psycopg2-binary==2.8.4
 PyJWT==1.7.1
