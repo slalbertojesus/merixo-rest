@@ -12,7 +12,7 @@ idna==2.8
 jenkins==1.0.2
 numpy==1.17.4
 opencv-python==4.1.1.26
-Pillow==6.2.1
+Pillow==9.0.0
 psycopg2-binary==2.8.4
 PyJWT==1.7.1
 pytz==2019.3
